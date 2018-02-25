@@ -6,7 +6,7 @@ import (
 )
 
 type GameService interface {
-	newGame() int
+	NewGame() int
 }
 
 type inMemoryGameService struct {
@@ -18,7 +18,7 @@ func NewGameService() GameService {
 	return &inMemoryGameService{}
 }
 
-func (gs *inMemoryGameService) newGame() int {
+func (gs *inMemoryGameService) NewGame() int {
 	gs.mux.Lock()
 	defer gs.mux.Unlock()
 	gs.games = append(gs.games, domain.State{})

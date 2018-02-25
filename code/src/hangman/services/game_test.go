@@ -14,7 +14,7 @@ func Test_newGame(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewGameService().newGame(); got != tt.want {
+			if got := NewGameService().NewGame(); got != tt.want {
 				t.Errorf("newGame() = %v, want %v", got, tt.want)
 			}
 		})
@@ -23,7 +23,7 @@ func Test_newGame(t *testing.T) {
 
 func Test_newGames(t *testing.T) {
 	gs := NewGameService()
-	_ = gs.newGame()
-	got := gs.newGame()
+	_ = gs.NewGame()
+	got := gs.NewGame()
 	assert.Equal(t, 1, got, "Should only be second game")
 }
