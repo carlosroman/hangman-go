@@ -1,10 +1,14 @@
 package domain
 
+import "sync"
+
 type Status int
 
 type State struct {
-	id     int
-	status Status
+	sync.RWMutex
+	Id     int
+	Status Status
+	Misses []rune
 }
 
 const (
