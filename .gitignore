@@ -211,3 +211,8 @@ Session.vim
 *~
 # Auto-generated tag files
 tags
+
+# Project ignores
+code/src/golang.org
+code/src/github.com
+code/pkg
