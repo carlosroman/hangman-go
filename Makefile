@@ -7,11 +7,11 @@ build:
 test-service:
 	go test \
 		-race -v  \
-		code/src/hangman/services/*.go
+		./code/src/hangman/services/...
 
 test-server:
 	go test \
 		-race -v  \
-		code/src/hangman/server/handlers/*.go
+		./code/src/hangman/server/handlers/...
 
 test: test-service test-server
