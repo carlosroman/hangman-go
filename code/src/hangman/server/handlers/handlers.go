@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
@@ -9,12 +9,20 @@ import (
 	"strconv"
 )
 
+type GameServer interface {
+	InitialiseHandlers()
+}
+
+func NewGameServer(r  *mux.Router, gs services.GameService) GameServer {
+	return &App{r, gs}
+}
+
 type App struct {
 	r  *mux.Router
 	gs services.GameService
 }
 
-func (a *App) initialiseHandlers() {
+func (a *App) InitialiseHandlers() {
 	a.r.HandleFunc("/game", a.handleNewGame).Methods("POST")
 	a.r.HandleFunc("/game/{id:[0-9]+}/guess", a.handleGuess).Methods("POST")
 }

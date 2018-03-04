@@ -8,11 +8,15 @@ import (
 	"net/http"
 	"os"
 	"time"
+	"hangman/services"
+	"hangman/server/handlers"
 )
 
 func main() {
 	var port int
 	r := mux.NewRouter()
+	gs := handlers.NewGameServer(r, services.NewGameService())
+	gs.InitialiseHandlers()
 	app := cli.NewApp()
 	app.Name = "Hangman server"
 	app.Flags = []cli.Flag{

@@ -12,6 +12,6 @@ test-service:
 test-server:
 	go test \
 		-race -v  \
-		code/src/hangman/server/*.go
+		code/src/hangman/server/handlers/*.go
 
 test: test-service test-server

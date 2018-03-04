@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"testing"
@@ -21,7 +21,7 @@ func TestHandlers(t *testing.T) {
 		r:  r,
 	}
 
-	a.initialiseHandlers()
+	a.InitialiseHandlers()
 
 	tests := []struct {
 		name       string
