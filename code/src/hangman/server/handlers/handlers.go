@@ -13,7 +13,7 @@ type GameServer interface {
 	InitialiseHandlers()
 }
 
-func NewGameServer(r  *mux.Router, gs services.GameService) GameServer {
+func NewGameServer(r *mux.Router, gs services.GameService) GameServer {
 	return &App{r, gs}
 }
 

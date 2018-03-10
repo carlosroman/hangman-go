@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/urfave/cli"
+	"hangman/server/handlers"
+	"hangman/services"
 	"log"
 	"net/http"
 	"os"
 	"time"
-	"hangman/services"
-	"hangman/server/handlers"
 )
 
 func main() {
