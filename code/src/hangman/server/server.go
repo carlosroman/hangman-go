@@ -6,6 +6,8 @@ import (
 	"github.com/urfave/cli"
 	"hangman/server/handlers"
 	"hangman/services"
+	"hangman/services/wordstore"
+	"hangman/utils"
 	"log"
 	"net/http"
 	"os"
@@ -13,10 +15,9 @@ import (
 )
 
 func main() {
+	utils.EnableServerMode()
 	var port int
-	r := mux.NewRouter()
-	gs := handlers.NewGameServer(r, services.NewGameService())
-	gs.InitialiseHandlers()
+	var csvPath string
 	app := cli.NewApp()
 	app.Name = "Hangman server"
 	app.Flags = []cli.Flag{
@@ -27,9 +28,19 @@ func main() {
 			EnvVar:      "PORT",
 			Destination: &port,
 		},
+		cli.StringFlag{
+			Name:        "csv, c",
+			Usage:       "File path to CSV file",
+			EnvVar:      "CSV_PATH",
+			Destination: &csvPath,
+		},
 	}
 
 	app.Action = func(c *cli.Context) error {
+		r := mux.NewRouter()
+		ws, _ := wordstore.NewInMemoryStoreFromCSV(csvPath) // todo: deal with error
+		gs := handlers.NewGameServer(r, services.NewGameService(ws))
+		gs.InitialiseHandlers()
 		srv := &http.Server{
 			Handler: r,
 			Addr:    fmt.Sprintf("127.0.0.1:%d", port),

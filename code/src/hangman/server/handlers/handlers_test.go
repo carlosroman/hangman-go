@@ -7,6 +7,8 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"hangman/domain"
 	"hangman/services"
 	"io"
 	"net/http"
@@ -35,6 +37,7 @@ func TestHandlers(t *testing.T) {
 			method:     "POST",
 			statusCode: 201,
 			path:       "/game",
+			body:       NewGame{Difficulty: domain.NORMAL},
 		},
 		{
 			name:       "Make a guess",
@@ -46,7 +49,7 @@ func TestHandlers(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gs.On("NewGame").Return(2)
+			gs.On("NewGame", mock.Anything).Return(2)
 			gs.On("Guess", 2, 'a').Return(true)
 
 			rec := httptest.NewRecorder()

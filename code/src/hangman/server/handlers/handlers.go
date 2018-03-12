@@ -28,7 +28,11 @@ func (a *App) InitialiseHandlers() {
 }
 
 func (a *App) handleNewGame(w http.ResponseWriter, r *http.Request) {
-	id := a.gs.NewGame()
+	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
+	var n NewGame
+	decoder.Decode(&n) // todo handle error
+	id := a.gs.NewGame(n.Difficulty)
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Location", fmt.Sprintf("/game/%d", id))
 }

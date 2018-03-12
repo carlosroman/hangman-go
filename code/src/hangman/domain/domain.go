@@ -11,6 +11,7 @@ type State struct {
 	Id     int
 	Status Status
 	Misses []rune
+	Word   Word
 }
 
 const (

@@ -9,8 +9,8 @@ type GameServiceMock struct {
 	mock.Mock
 }
 
-func (gs *GameServiceMock) NewGame() int {
-	args := gs.Called()
+func (gs *GameServiceMock) NewGame(d domain.Difficulty) int {
+	args := gs.Called(d)
 	return args.Int(0)
 }
 

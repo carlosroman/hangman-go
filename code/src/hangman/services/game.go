@@ -2,11 +2,12 @@ package services
 
 import (
 	"hangman/domain"
+	"hangman/services/wordstore"
 	"sync"
 )
 
 type GameService interface {
-	NewGame() int
+	NewGame(d domain.Difficulty) int
 	Guess(id int, char rune) bool
 	GetGame(id int) domain.State
 }
@@ -14,16 +15,22 @@ type GameService interface {
 type inMemoryGameService struct {
 	sync.RWMutex
 	games []domain.State
+	w     wordstore.Store
 }
 
-func NewGameService() GameService {
-	return &inMemoryGameService{}
+func NewGameService(words wordstore.Store) GameService {
+	return &inMemoryGameService{w: words}
 }
 
-func (gs *inMemoryGameService) NewGame() int {
+func (gs *inMemoryGameService) NewGame(d domain.Difficulty) int {
 	gs.Lock()
 	defer gs.Unlock()
-	gs.games = append(gs.games, domain.State{Id: len(gs.games)})
+	w, _ := gs.w.GetWord(d)
+	wd := domain.Word{
+		Letters:    []rune(w),
+		Difficulty: d,
+	}
+	gs.games = append(gs.games, domain.State{Id: len(gs.games), Word: wd})
 	return len(gs.games) - 1
 }
 

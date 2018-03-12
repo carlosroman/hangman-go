@@ -1,9 +1,19 @@
 package services
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"hangman/domain"
+	"hangman/services/wordstore"
 	"testing"
 )
+
+func assertWorsdStoreCalledCorrectly(t *testing.T, s *wordstore.StoreMock, d domain.Difficulty) {
+	assert.True(t,
+		s.AssertCalled(t, "GetWord", domain.NORMAL),
+		fmt.Sprintf("Expected word store to be called with Difficulty '%s'", domain.NORMAL))
+}
 
 func Test_newGame(t *testing.T) {
 	tests := []struct {
@@ -14,39 +24,50 @@ func Test_newGame(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewGameService().NewGame(); got != tt.want {
+			s := new(wordstore.StoreMock)
+			s.On("GetWord", mock.AnythingOfType("domain.Difficulty")).Return("word", nil).Once()
+			if got := NewGameService(s).NewGame(domain.NORMAL); got != tt.want {
 				t.Errorf("newGame() = %v, want %v", got, tt.want)
 			}
+			assertWorsdStoreCalledCorrectly(t, s, domain.NORMAL)
 		})
 	}
 }
 
 func Test_NewGames(t *testing.T) {
-	gs := NewGameService()
-	_ = gs.NewGame()
-	got := gs.NewGame()
+	ws := wordstore.NewMock()
+	ws.On("GetWord", mock.AnythingOfType("domain.Difficulty")).Return("word", nil).Twice()
+	gs := NewGameService(ws)
+	_ = gs.NewGame(domain.EASY)
+	got := gs.NewGame(domain.HARD)
 	assert.Equal(t, 1, got, "Should only be second game")
 }
 func Test_GetGame(t *testing.T) {
-	gs := NewGameService()
+	ws := wordstore.NewMock()
+	ws.On("GetWord", mock.AnythingOfType("domain.Difficulty")).Return("word", nil).Twice()
+	gs := NewGameService(ws)
 	tests := []struct {
-		name string
+		name       string
+		difficulty domain.Difficulty
 	}{
-		{name: "One"},
-		{name: "Two"},
+		{name: "One", difficulty: domain.NORMAL},
+		{name: "Two", difficulty: domain.VERY_HARD},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			id := gs.NewGame()
+			id := gs.NewGame(tt.difficulty)
 			g := gs.GetGame(id)
 			assert.Equal(t, id, g.Id)
+			assertWorsdStoreCalledCorrectly(t, ws, tt.difficulty)
 		})
 	}
 }
 
 func Test_Guess(t *testing.T) {
-	gs := NewGameService()
-	id := gs.NewGame()
+	ws := wordstore.NewMock()
+	ws.On("GetWord", mock.AnythingOfType("domain.Difficulty")).Return("word", nil).Once()
+	gs := NewGameService(ws)
+	id := gs.NewGame(domain.VERY_HARD)
 	assert.Empty(t, gs.GetGame(id).Misses)
 
 	tests := []struct {
