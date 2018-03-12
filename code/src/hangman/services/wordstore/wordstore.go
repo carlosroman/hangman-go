@@ -4,14 +4,14 @@ import (
 	"encoding/csv"
 	"errors"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"hangman/domain"
+	log "hangman/utils"
 	"io"
 	"math/rand"
 	"os"
 	"strconv"
 	"strings"
-	log "hangman/utils"
-	"github.com/sirupsen/logrus"
 )
 
 var logger = log.Logger()
@@ -26,7 +26,7 @@ type inMemoryStore struct {
 
 func (s *inMemoryStore) GetWord(d domain.Difficulty) (string, error) {
 	logger.WithFields(logrus.Fields{
-		"difficulty" : d,
+		"difficulty": d,
 	}).Info("Got request for word")
 	l := len(s.words[d])
 	if l < 1 {
