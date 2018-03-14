@@ -8,10 +8,11 @@ type Status int
 
 type State struct {
 	sync.RWMutex
-	Id     int
-	Status Status
-	Misses []rune
-	Word   Word
+	Id      int
+	Status  Status
+	Misses  int
+	Guesses []rune
+	Word    Word
 }
 
 const (
@@ -46,4 +47,13 @@ func (d Difficulty) String() string {
 type Word struct {
 	Letters    []rune
 	Difficulty Difficulty
+}
+
+func (w *Word) Contains(l rune) bool {
+	for _, value := range w.Letters {
+		if value == l {
+			return true
+		}
+	}
+	return false
 }

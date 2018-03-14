@@ -71,18 +71,22 @@ func Test_Guess(t *testing.T) {
 	assert.Empty(t, gs.GetGame(id).Misses)
 
 	tests := []struct {
-		name   string
-		guess  rune
-		expect []rune
+		name              string
+		guess             rune
+		expectGuesses     []rune
+		expectFound       bool
+		expectedGuessLeft int
 	}{
-		{name: "First", guess: 'a', expect: []rune{'a'}},
-		{name: "Second", guess: 'b', expect: []rune{'a', 'b'}},
-		{name: "Third", guess: 'a', expect: []rune{'a', 'b', 'a'}},
+		{name: "First", guess: 'w', expectGuesses: []rune{'w'}, expectFound: true, expectedGuessLeft: 8},
+		{name: "Second", guess: 'b', expectGuesses: []rune{'w', 'b'}, expectFound: false, expectedGuessLeft: 7},
+		{name: "Third", guess: 'd', expectGuesses: []rune{'w', 'b', 'd'}, expectFound: true, expectedGuessLeft: 7},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.False(t, gs.Guess(id, tt.guess))
-			assert.Equal(t, gs.GetGame(id).Misses, tt.expect)
+			r, m := gs.Guess(id, tt.guess)
+			assert.Equal(t, r, tt.expectFound, fmt.Sprintf("Expected Found to be %s", tt.expectFound))
+			assert.Equal(t, m, tt.expectedGuessLeft, fmt.Sprintf("Expected Guess Left to be %s", tt.expectedGuessLeft))
+			assert.Equal(t, gs.GetGame(id).Guesses, tt.expectGuesses)
 		})
 	}
 }

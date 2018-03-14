@@ -44,6 +44,15 @@ func (a *App) handleGuess(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	var g Guess
 	decoder.Decode(&g) // todo handle error
-	a.gs.Guess(int(id), g.Guess)
+	c, gl := a.gs.Guess(int(id), g.Guess)
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+
+	gr := GuessResponse{
+		Correct:     c,
+		GuessesLeft: gl,
+	}
+
+	json.NewEncoder(w).Encode(gr)
 }

@@ -8,7 +8,7 @@ import (
 
 type GameService interface {
 	NewGame(d domain.Difficulty) int
-	Guess(id int, char rune) bool
+	Guess(id int, char rune) (bool, int)
 	GetGame(id int) domain.State
 }
 
@@ -34,13 +34,18 @@ func (gs *inMemoryGameService) NewGame(d domain.Difficulty) int {
 	return len(gs.games) - 1
 }
 
-func (gs *inMemoryGameService) Guess(id int, char rune) bool {
+func (gs *inMemoryGameService) Guess(id int, char rune) (bool, int) {
 	gs.RLock()
 	defer gs.RUnlock()
 	gs.games[id].Lock()
 	defer gs.games[id].Unlock()
-	gs.games[id].Misses = append(gs.games[id].Misses, char)
-	return false
+
+	gs.games[id].Guesses = append(gs.games[id].Guesses, char)
+	f := gs.games[id].Word.Contains(char)
+	if !f {
+		gs.games[id].Misses += 1
+	}
+	return f, 8 - gs.games[id].Misses
 }
 
 func (gs *inMemoryGameService) GetGame(id int) domain.State {
