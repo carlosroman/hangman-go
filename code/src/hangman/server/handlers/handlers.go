@@ -32,7 +32,7 @@ func (a *App) handleNewGame(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	var n NewGame
 	decoder.Decode(&n) // todo handle error
-	id := a.gs.NewGame(n.Difficulty)
+	id := a.gs.NewGame(n.Difficulty.toDomainDifficulty())
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Location", fmt.Sprintf("/game/%d", id))
 }

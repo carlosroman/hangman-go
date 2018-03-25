@@ -8,7 +8,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"hangman/domain"
 	"hangman/services"
 	"hangman/utils"
 	"io"
@@ -34,7 +33,7 @@ func TestHandlers(t *testing.T) {
 			method:     "POST",
 			statusCode: 201,
 			path:       "/game",
-			body:       NewGame{Difficulty: domain.NORMAL},
+			body:       NewGame{Difficulty: NORMAL},
 			setup: func(gs *services.GameServiceMock) {
 				gs.On("NewGame", mock.Anything).Return(2)
 			},

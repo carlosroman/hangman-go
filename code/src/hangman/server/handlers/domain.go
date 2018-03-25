@@ -12,6 +12,33 @@ type GuessResponse struct {
 	//Letters     []rune `json:"letters"`
 }
 
+type Difficulty string
+
+const (
+	VERY_EASY Difficulty = "VERY_EASY"
+	EASY                 = "EASY"
+	NORMAL               = "NORMAL"
+	HARD                 = "HARD"
+	VERY_HARD            = "VERY_HARD"
+)
+
+func (d Difficulty) toDomainDifficulty() domain.Difficulty {
+	switch d {
+	case VERY_EASY:
+		return domain.VERY_EASY
+	case EASY:
+		return domain.EASY
+	case NORMAL:
+		return domain.NORMAL
+	case HARD:
+		return domain.HARD
+	case VERY_HARD:
+		return domain.VERY_HARD
+	default:
+		return -1
+	}
+}
+
 type NewGame struct {
-	Difficulty domain.Difficulty `json:"difficulty"`
+	Difficulty Difficulty `json:"difficulty"`
 }
