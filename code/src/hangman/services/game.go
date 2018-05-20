@@ -1,28 +1,29 @@
 package services
 
 import (
+	"github.com/satori/go.uuid"
 	"hangman/domain"
 	"hangman/services/wordstore"
 	"sync"
 )
 
 type GameService interface {
-	NewGame(d domain.Difficulty) int
-	Guess(id int, char rune) (bool, int)
-	GetGame(id int) domain.State
+	NewGame(d domain.Difficulty) string
+	Guess(id string, char rune) (bool, int)
+	GetGame(id string) domain.State
 }
 
 type inMemoryGameService struct {
 	sync.RWMutex
-	games []domain.State
+	games map[string]*domain.State
 	w     wordstore.Store
 }
 
 func NewGameService(words wordstore.Store) GameService {
-	return &inMemoryGameService{w: words}
+	return &inMemoryGameService{w: words, games: make(map[string]*domain.State)}
 }
 
-func (gs *inMemoryGameService) NewGame(d domain.Difficulty) int {
+func (gs *inMemoryGameService) NewGame(d domain.Difficulty) string {
 	gs.Lock()
 	defer gs.Unlock()
 	w, _ := gs.w.GetWord(d)
@@ -30,11 +31,12 @@ func (gs *inMemoryGameService) NewGame(d domain.Difficulty) int {
 		Letters:    []rune(w),
 		Difficulty: d,
 	}
-	gs.games = append(gs.games, domain.State{Id: len(gs.games), Word: wd})
-	return len(gs.games) - 1
+	id := uuid.NewV4().String()
+	gs.games[id] = &domain.State{Id: id, Word: wd}
+	return id
 }
 
-func (gs *inMemoryGameService) Guess(id int, char rune) (bool, int) {
+func (gs *inMemoryGameService) Guess(id string, char rune) (bool, int) {
 	gs.RLock()
 	defer gs.RUnlock()
 	gs.games[id].Lock()
@@ -48,6 +50,6 @@ func (gs *inMemoryGameService) Guess(id int, char rune) (bool, int) {
 	return f, 8 - gs.games[id].Misses
 }
 
-func (gs *inMemoryGameService) GetGame(id int) domain.State {
-	return gs.games[id]
+func (gs *inMemoryGameService) GetGame(id string) domain.State {
+	return *gs.games[id]
 }

@@ -8,7 +8,7 @@ type Status int
 
 type State struct {
 	sync.RWMutex
-	Id      int
+	Id      string
 	Status  Status
 	Misses  int
 	Guesses []rune

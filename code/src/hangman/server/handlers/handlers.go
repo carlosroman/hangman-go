@@ -6,7 +6,6 @@ import (
 	"github.com/gorilla/mux"
 	"hangman/services"
 	"net/http"
-	"strconv"
 )
 
 type GameServer interface {
@@ -24,7 +23,7 @@ type App struct {
 
 func (a *App) InitialiseHandlers() {
 	a.r.HandleFunc("/game", a.handleNewGame).Methods("POST")
-	a.r.HandleFunc("/game/{id:[0-9]+}/guess", a.handleGuess).Methods("POST")
+	a.r.HandleFunc("/game/{id:[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}}/guess", a.handleGuess).Methods("POST")
 }
 
 func (a *App) handleNewGame(w http.ResponseWriter, r *http.Request) {
@@ -34,17 +33,17 @@ func (a *App) handleNewGame(w http.ResponseWriter, r *http.Request) {
 	decoder.Decode(&n) // todo handle error
 	id := a.gs.NewGame(n.Difficulty.toDomainDifficulty())
 	w.WriteHeader(http.StatusCreated)
-	w.Header().Set("Location", fmt.Sprintf("/game/%d", id))
+	w.Header().Set("Location", fmt.Sprintf("/game/%s", id))
 }
 
 func (a *App) handleGuess(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, _ := strconv.ParseInt(vars["id"], 10, 64)
+	id, _ := vars["id"] // todo: check valid UUID + handle error
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 	var g Guess
-	decoder.Decode(&g) // todo handle error
-	c, gl := a.gs.Guess(int(id), g.Guess)
+	decoder.Decode(&g) // todo: handle error
+	c, gl := a.gs.Guess(id, g.Guess)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

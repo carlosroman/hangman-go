@@ -35,31 +35,31 @@ func TestHandlers(t *testing.T) {
 			path:       "/game",
 			body:       NewGame{Difficulty: NORMAL},
 			setup: func(gs *services.GameServiceMock) {
-				gs.On("NewGame", mock.Anything).Return(2)
+				gs.On("NewGame", mock.Anything).Return("123e4567-e89b-12d3-a456-426655440000")
 			},
 		},
 		{
 			name:       "Make a successful guess",
 			method:     "POST",
 			statusCode: 200,
-			path:       "/game/2/guess",
+			path:       "/game/123e4567-e89b-12d3-a456-426655440000/guess",
 			body:       Guess{Guess: 'a'},
 			resp:       "{\"correct\":true,\"guessesLeft\":7331}\n",
 			setup: func(gs *services.GameServiceMock) {
-				gs.On("NewGame", mock.Anything).Return(2)
-				gs.On("Guess", 2, 'a').Return(true, 7331)
+				gs.On("NewGame", mock.Anything).Return("123e4567-e89b-12d3-a456-426655440000")
+				gs.On("Guess", "123e4567-e89b-12d3-a456-426655440000", 'a').Return(true, 7331)
 			},
 		},
 		{
 			name:       "Make a bad guess",
 			method:     "POST",
 			statusCode: 200,
-			path:       "/game/2/guess",
+			path:       "/game/123e4567-e89b-12d3-a456-426655440000/guess",
 			body:       Guess{Guess: 'a'},
 			resp:       "{\"correct\":false,\"guessesLeft\":1337}\n",
 			setup: func(gs *services.GameServiceMock) {
-				gs.On("NewGame", mock.Anything).Return(2)
-				gs.On("Guess", 2, 'a').Return(false, 1337)
+				gs.On("NewGame", mock.Anything).Return("123e4567-e89b-12d3-a456-426655440000")
+				gs.On("Guess", "123e4567-e89b-12d3-a456-426655440000", 'a').Return(false, 1337)
 			},
 		},
 	}

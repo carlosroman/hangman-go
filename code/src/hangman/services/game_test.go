@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"hangman/domain"
@@ -18,17 +19,18 @@ func assertWorsdStoreCalledCorrectly(t *testing.T, s *wordstore.StoreMock, d dom
 func Test_newGame(t *testing.T) {
 	tests := []struct {
 		name string
-		want int
+		want string
 	}{
-		{name: " New game results", want: 0},
+		{name: " New game results"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			s := new(wordstore.StoreMock)
 			s.On("GetWord", mock.AnythingOfType("domain.Difficulty")).Return("word", nil).Once()
-			if got := NewGameService(s).NewGame(domain.NORMAL); got != tt.want {
-				t.Errorf("newGame() = %v, want %v", got, tt.want)
-			}
+			got := NewGameService(s).NewGame(domain.NORMAL)
+			u, err := uuid.FromString(got)
+			assert.NoError(t, err)
+			assert.Equal(t, uuid.V4, u.Version())
 			assertWorsdStoreCalledCorrectly(t, s, domain.NORMAL)
 		})
 	}
@@ -38,10 +40,11 @@ func Test_NewGames(t *testing.T) {
 	ws := wordstore.NewMock()
 	ws.On("GetWord", mock.AnythingOfType("domain.Difficulty")).Return("word", nil).Twice()
 	gs := NewGameService(ws)
-	_ = gs.NewGame(domain.EASY)
+	one := gs.NewGame(domain.EASY)
 	got := gs.NewGame(domain.HARD)
-	assert.Equal(t, 1, got, "Should only be second game")
+	assert.NotEqual(t, one, got, "Should both be different")
 }
+
 func Test_GetGame(t *testing.T) {
 	ws := wordstore.NewMock()
 	ws.On("GetWord", mock.AnythingOfType("domain.Difficulty")).Return("word", nil).Twice()

@@ -9,17 +9,17 @@ type GameServiceMock struct {
 	mock.Mock
 }
 
-func (gs *GameServiceMock) NewGame(d domain.Difficulty) int {
+func (gs *GameServiceMock) NewGame(d domain.Difficulty) string {
 	args := gs.Called(d)
-	return args.Int(0)
+	return args.String(0)
 }
 
-func (gs *GameServiceMock) Guess(id int, char rune) (bool, int) {
+func (gs *GameServiceMock) Guess(id string, char rune) (bool, int) {
 	args := gs.Called(id, char)
 	return args.Bool(0), args.Int(1)
 }
 
-func (gs *GameServiceMock) GetGame(id int) domain.State {
+func (gs *GameServiceMock) GetGame(id string) domain.State {
 	args := gs.Called(id)
 	return args.Get(0).(domain.State)
 }
