@@ -18,4 +18,14 @@ jobs:
     working_directory: /go/src/hangman-go
     steps:
       - checkout
-      - run: make test
+      - run:
+          name: Download ginkgo
+          command: go get -v github.com/onsi/ginkgo/ginkgo
+      - run:
+          name: Set PATH
+          command: |
+            echo 'export PATH=/go/src/hangman-go/code/bin:$PATH' >> $BASH_ENV
+            source $BASH_ENV
+      - run:
+          name: Run tests
+          command: make test

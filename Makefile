@@ -14,4 +14,14 @@ test-server:
 		-race -v  \
 		./code/src/hangman/server/handlers/...
 
-test: test-service test-server
+test:
+	ginkgo \
+        -r \
+        --randomizeAllSpecs \
+        --randomizeSuites \
+        --failOnPending \
+        --cover \
+        --trace \
+        --race \
+        --compilers=2 \
+        ./code/src/hangman/

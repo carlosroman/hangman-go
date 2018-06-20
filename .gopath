@@ -1,3 +1,4 @@
 export GOPATH=$(pwd)/code
 export GOBIN=$GOPATH/bin
 export DEP_VERSION=0.4.1
+export PATH=$GOBIN:$PATH
