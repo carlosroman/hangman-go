@@ -1,17 +1,3 @@
-# https://raw.githubusercontent.com/github/gitignore/master/Go.gitignore
-# Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-
-# Test binary, build with `go test -c`
-*.test
-
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
-
 # https://raw.githubusercontent.com/github/gitignore/master/Global/Linux.gitignore
 *~
 
@@ -537,6 +523,3 @@ ASALocalRun/
 #
 # Project ignores
 #
-code/src/golang.org
-code/src/github.com
-code/pkg
