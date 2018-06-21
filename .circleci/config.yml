@@ -15,12 +15,13 @@ jobs:
       
     environment:
       GOPATH: /go/src/hangman-go/code
+      DEP_VERSION: 0.4.1
     working_directory: /go/src/hangman-go
     steps:
       - checkout
       - run:
-          name: Download ginkgo
-          command: go get -v github.com/onsi/ginkgo/ginkgo
+          name: Setup for test
+          command: make setup
       - run:
           name: Set PATH
           command: |
@@ -29,3 +30,9 @@ jobs:
       - run:
           name: Run tests
           command: make test
+      - run:
+          name: Download goveralls
+          command: go get -v github.com/mattn/goveralls
+      - run:
+          name: Upload Coverage
+          command: make coveralls

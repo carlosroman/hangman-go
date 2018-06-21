@@ -1,6 +1,6 @@
 # hangman-go 
 
-[![CircleCI](https://circleci.com/gh/carlosroman/hangman-go.svg?style=svg)](https://circleci.com/gh/carlosroman/hangman-go)
+[![CircleCI](https://circleci.com/gh/carlosroman/hangman-go.svg?style=svg)](https://circleci.com/gh/carlosroman/hangman-go)[![Coverage Status](https://coveralls.io/repos/github/carlosroman/hangman-go/badge.svg?branch=master)](https://coveralls.io/github/carlosroman/hangman-go?branch=master)
 
 
 ## Installation
