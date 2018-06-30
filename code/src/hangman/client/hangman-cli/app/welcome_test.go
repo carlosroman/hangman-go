@@ -1,4 +1,4 @@
-package main_test
+package app
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -6,8 +6,6 @@ import (
 	"github.com/rivo/tview"
 
 	"github.com/gdamore/tcell"
-	. "hangman/client/hangman-cli"
-
 	"fmt"
 	"reflect"
 )

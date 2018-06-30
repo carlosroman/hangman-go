@@ -2,10 +2,11 @@ package main
 
 import (
 	"github.com/rivo/tview"
+	"hangman/client/hangman-cli/app"
 )
 
 func main() {
-	app := tview.NewApplication()
+	a := app.NewApp()
 
 	pages := tview.NewPages()
 
@@ -13,24 +14,16 @@ func main() {
 		pages.SwitchToPage(p)
 	}
 
-	stopApp := func() {
-		app.Stop()
-	}
-
-	newGame := func(name string, difficulty string) error {
-		return nil
-	}
-
 	pages.AddPage(
 		"welcome",
-		Welcome(nextSlide, stopApp),
+		app.Welcome(nextSlide, a.StopApp),
 		true,
 		true,
 	)
 
 	pages.AddPage(
 		"start",
-		Start(nextSlide, stopApp, newGame),
+		app.Start(nextSlide, a.StopApp, a.NewGame),
 		true,
 		false,
 	)
@@ -45,7 +38,7 @@ func main() {
 		SetDirection(tview.FlexRow).
 		AddItem(pages, 0, 1, true).
 		AddItem(info, 1, 1, false)
-	if err := app.SetRoot(layout, true).Run(); err != nil {
+	if err := a.SetRoot(layout, true).Run(); err != nil {
 		panic(err)
 	}
 }

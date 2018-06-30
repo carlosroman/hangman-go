@@ -1,12 +1,10 @@
-package main_test
+package app
 
 import (
 	"github.com/gdamore/tcell"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"github.com/rivo/tview"
-
-	. "hangman/client/hangman-cli"
 )
 
 var _ = Describe("Start", func() {
