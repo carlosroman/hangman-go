@@ -17,6 +17,10 @@ func main() {
 		app.Stop()
 	}
 
+	newGame := func(name string, difficulty string) error {
+		return nil
+	}
+
 	pages.AddPage(
 		"welcome",
 		Welcome(nextSlide, stopApp),
@@ -26,7 +30,7 @@ func main() {
 
 	pages.AddPage(
 		"start",
-		Start(nextSlide, stopApp),
+		Start(nextSlide, stopApp, newGame),
 		true,
 		false,
 	)
