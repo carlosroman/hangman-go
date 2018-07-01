@@ -7,6 +7,7 @@ import (
 func Start(nextSlide func(p string),
 	stopApp func(),
 	newGame func(name string, difficulty string) error) tview.Primitive {
+
 	d := []string{
 		"Very easy",
 		"Easy",

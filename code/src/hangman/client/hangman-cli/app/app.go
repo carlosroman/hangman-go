@@ -1,6 +1,8 @@
 package app
 
-import "github.com/rivo/tview"
+import (
+	"github.com/rivo/tview"
+)
 
 type App interface {
 	StopApp()
@@ -10,7 +12,7 @@ type App interface {
 }
 
 type app struct {
-	ta *tview.Application
+	ta tviewApplication
 }
 
 func (a *app) StopApp() {
@@ -31,5 +33,24 @@ func (a *app) Run() error {
 }
 
 func NewApp() App {
-	return &app{tview.NewApplication()}
+	return &app{
+		ta: tview.NewApplication(),
+	}
+}
+
+type tviewApplication interface {
+	//SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *tview.Application
+	//GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey
+	Run() error
+	Stop()
+	//Suspend(f func()) bool
+	//Draw() *tview.Application
+	//SetBeforeDrawFunc(handler func(screen tcell.Screen) bool) *tview.Application
+	//GetBeforeDrawFunc() func(screen tcell.Screen) bool
+	//SetAfterDrawFunc(handler func(screen tcell.Screen)) *tview.Application
+	//GetAfterDrawFunc() func(screen tcell.Screen)
+	SetRoot(root tview.Primitive, fullscreen bool) *tview.Application
+	//ResizeToFullScreen(p tview.Primitive) *tview.Application
+	//SetFocus(p tview.Primitive) *tview.Application
+	//GetFocus() tview.Primitive
 }

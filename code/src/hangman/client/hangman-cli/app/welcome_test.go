@@ -5,8 +5,8 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/rivo/tview"
 
-	"github.com/gdamore/tcell"
 	"fmt"
+	"github.com/gdamore/tcell"
 	"reflect"
 )
 
