@@ -14,15 +14,18 @@ import (
 
 var _ = Describe("App", func() {
 	var (
-		ta *ApplicationMock
+		ta *TvViewApplicationMock
+		ac *ApiClientMock
 		a  App
 	)
 	Describe("Application functions", func() {
 
 		BeforeEach(func() {
-			ta = &ApplicationMock{}
+			ta = &TvViewApplicationMock{}
+			ac = &ApiClientMock{}
 			a = &app{
 				ta: ta,
+				ac: ac,
 			}
 		})
 
@@ -52,31 +55,65 @@ var _ = Describe("App", func() {
 			})
 		})
 
+		Context("when new game called", func() {
+
+			It("should call the client correctly", func() {
+				ac.givenNewGameReturns("some-id", nil)
+				Expect(a.NewGame("name", "difficulty")).Should(Succeed())
+				ac.AssertExpectations(GinkgoT())
+				assert.True(
+					GinkgoT(),
+					ac.AssertCalled(GinkgoT(), "NewGame", "name", "difficulty"),
+					"Expected New game to be called")
+			})
+
+			It("should return the client error", func() {
+				err := errors.New("some error")
+				ac.givenNewGameReturns("some-id", err)
+				Expect(a.NewGame("name", "difficulty")).ShouldNot(Succeed())
+				ac.AssertExpectations(GinkgoT())
+			})
+		})
 	})
 })
 
-type ApplicationMock struct {
+type TvViewApplicationMock struct {
 	tview.Application
 	mock.Mock
 }
 
-func (a *ApplicationMock) Run() error {
+func (a *TvViewApplicationMock) Run() error {
 	fmt.Fprintln(GinkgoWriter, "Run called.")
 	return a.Called().Error(0)
 }
 
-func (a *ApplicationMock) Stop() {
+func (a *TvViewApplicationMock) Stop() {
 	fmt.Fprintln(GinkgoWriter, "Stop called.")
 	a.Called()
 }
 
-func (a *ApplicationMock) SetRoot(root tview.Primitive, fullscreen bool) *tview.Application {
+func (a *TvViewApplicationMock) SetRoot(root tview.Primitive, fullscreen bool) *tview.Application {
 	a.Called(root, fullscreen)
 	var at = unsafe.Pointer(a)
 	return (*tview.Application)(at)
 }
 
-func (a *ApplicationMock) GetWord(d domain.Difficulty) (string, error) {
+func (a *TvViewApplicationMock) GetWord(d domain.Difficulty) (string, error) {
 	args := a.Called(d)
 	return args.String(0), args.Error(1)
+}
+
+type ApiClientMock struct {
+	mock.Mock
+}
+
+func (c *ApiClientMock) NewGame(name string, difficulty string) (string, error) {
+	args := c.Called(name, difficulty)
+	return args.String(0), args.Error(1)
+}
+
+func (c *ApiClientMock) givenNewGameReturns(id string, err error) {
+	c.
+		On("NewGame", mock.AnythingOfType("string"), mock.AnythingOfType("string")).
+		Return(id, err)
 }

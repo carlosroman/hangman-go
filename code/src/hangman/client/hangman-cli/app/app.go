@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/rivo/tview"
+	"hangman/client/rest"
 )
 
 type App interface {
@@ -13,6 +14,7 @@ type App interface {
 
 type app struct {
 	ta tviewApplication
+	ac rest.ApiClient
 }
 
 func (a *app) StopApp() {
@@ -20,7 +22,8 @@ func (a *app) StopApp() {
 }
 
 func (a *app) NewGame(name string, difficulty string) error {
-	return nil
+	_, err := a.ac.NewGame(name, difficulty)
+	return err
 }
 
 func (a *app) SetRoot(root tview.Primitive, fullscreen bool) App {
