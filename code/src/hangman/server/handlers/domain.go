@@ -1,6 +1,10 @@
 package handlers
 
-import "hangman/domain"
+import (
+	"errors"
+	"hangman/domain"
+	"strings"
+)
 
 type Guess struct {
 	Guess rune `json:"guess"`
@@ -16,10 +20,10 @@ type Difficulty string
 
 const (
 	VERY_EASY Difficulty = "VERY_EASY"
-	EASY                 = "EASY"
-	NORMAL               = "NORMAL"
-	HARD                 = "HARD"
-	VERY_HARD            = "VERY_HARD"
+	EASY      Difficulty = "EASY"
+	NORMAL    Difficulty = "NORMAL"
+	HARD      Difficulty = "HARD"
+	VERY_HARD Difficulty = "VERY_HARD"
 )
 
 func (d Difficulty) toDomainDifficulty() domain.Difficulty {
@@ -36,6 +40,27 @@ func (d Difficulty) toDomainDifficulty() domain.Difficulty {
 		return domain.VERY_HARD
 	default:
 		return -1
+	}
+}
+
+func (d Difficulty) String() string {
+	return string(d)
+}
+
+func GetDifficulty(d string) (Difficulty, error) {
+	switch strings.TrimSpace(strings.ToUpper(d)) {
+	case VERY_EASY.String():
+		return VERY_EASY, nil
+	case EASY.String():
+		return EASY, nil
+	case NORMAL.String():
+		return NORMAL, nil
+	case HARD.String():
+		return HARD, nil
+	case VERY_HARD.String():
+		return VERY_HARD, nil
+	default:
+		return "", errors.New("invalid Difficulty")
 	}
 }
 

@@ -5,6 +5,10 @@ import (
 )
 
 type Config struct {
-	HostName   *string
+	BaseURL    *string
 	HTTPClient *http.Client
+}
+
+func NewConfig() *Config {
+	return &Config{}
 }

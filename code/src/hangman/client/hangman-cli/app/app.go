@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/rivo/tview"
 	"hangman/client/rest"
+	"sync/atomic"
 )
 
 type App interface {
@@ -10,11 +11,13 @@ type App interface {
 	NewGame(name string, difficulty string) error
 	SetRoot(root tview.Primitive, fullscreen bool) App
 	Run() error
+	GetGameId() string
 }
 
 type app struct {
-	ta tviewApplication
-	ac rest.ApiClient
+	ta     tviewApplication
+	ac     rest.ApiClient
+	gameId atomic.Value
 }
 
 func (a *app) StopApp() {
@@ -22,7 +25,10 @@ func (a *app) StopApp() {
 }
 
 func (a *app) NewGame(name string, difficulty string) error {
-	_, err := a.ac.NewGame(name, difficulty)
+	id, err := a.ac.NewGame(name, difficulty)
+	if err == nil {
+		a.gameId.Store(id)
+	}
 	return err
 }
 
@@ -35,9 +41,14 @@ func (a *app) Run() error {
 	return a.ta.Run()
 }
 
+func (a *app) GetGameId() string {
+	return a.gameId.Load().(string)
+}
+
 func NewApp() App {
 	return &app{
 		ta: tview.NewApplication(),
+		ac: rest.New(rest.NewConfig()),
 	}
 }
 

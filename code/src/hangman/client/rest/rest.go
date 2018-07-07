@@ -4,7 +4,8 @@ import "net/http"
 
 func New(cfg *Config) ApiClient {
 	return &client{
-		c: cfg.HTTPClient,
+		hc:      cfg.HTTPClient,
+		baseURL: *cfg.BaseURL,
 	}
 }
 
@@ -13,5 +14,6 @@ type ApiClient interface {
 }
 
 type client struct {
-	c *http.Client
+	hc      *http.Client
+	baseURL string
 }

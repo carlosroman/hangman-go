@@ -67,6 +67,12 @@ var _ = Describe("App", func() {
 					"Expected New game to be called")
 			})
 
+			It("should store the current game id", func() {
+				ac.givenNewGameReturns("some-id", nil)
+				a.NewGame("name", "difficulty")
+				Expect(a.GetGameId()).To(Equal("some-id"))
+			})
+
 			It("should return the client error", func() {
 				err := errors.New("some error")
 				ac.givenNewGameReturns("some-id", err)
