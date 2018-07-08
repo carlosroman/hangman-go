@@ -32,8 +32,8 @@ func (a *App) handleNewGame(w http.ResponseWriter, r *http.Request) {
 	var n NewGame
 	decoder.Decode(&n) // todo handle error
 	id := a.gs.NewGame(n.Difficulty.toDomainDifficulty())
-	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Location", fmt.Sprintf("/game/%s", id))
+	w.WriteHeader(http.StatusCreated)
 }
 
 func (a *App) handleGuess(w http.ResponseWriter, r *http.Request) {

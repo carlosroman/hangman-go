@@ -3,8 +3,10 @@ package rest
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"hangman/server/handlers"
 	"net/http"
+	"strings"
 )
 
 func (c *client) NewGame(name string, difficulty string) (string, error) {
@@ -26,6 +28,21 @@ func (c *client) NewGame(name string, difficulty string) (string, error) {
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 
 	resp, err := c.hc.Do(req)
-	defer resp.Body.Close()
-	return "", err
+	defer func(r *http.Response) {
+		if r != nil {
+			r.Body.Close()
+		}
+	}(resp)
+
+	var gid string
+	if resp != nil {
+		if resp.StatusCode != 201 {
+			err = errors.New("new game not created")
+		} else {
+			l := resp.Header.Get("Location")
+			gid = strings.Split(l, "/")[2]
+		}
+	}
+
+	return gid, err
 }

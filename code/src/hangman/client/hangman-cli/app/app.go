@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/rivo/tview"
 	"hangman/client/rest"
+	"net/http"
 	"sync/atomic"
 )
 
@@ -45,10 +46,13 @@ func (a *app) GetGameId() string {
 	return a.gameId.Load().(string)
 }
 
-func NewApp() App {
+func NewApp(baseUrl *string) App {
+	cfg := rest.NewConfig()
+	cfg.BaseURL = baseUrl
+	cfg.HTTPClient = http.DefaultClient
 	return &app{
 		ta: tview.NewApplication(),
-		ac: rest.New(rest.NewConfig()),
+		ac: rest.New(cfg),
 	}
 }
 
