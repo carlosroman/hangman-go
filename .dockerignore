@@ -1,0 +1,10 @@
+*.md
+LICENSE
+*.iml
+.git
+.DS_Store
+.gitignore
+target
+code/
+!code/src/hangman
+

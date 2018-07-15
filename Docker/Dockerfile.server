@@ -1,0 +1,26 @@
+#
+# Hangman serverA
+#
+FROM golang:1.10-alpine As builder
+
+COPY code/src/hangman $GOPATH/src/hangman
+
+WORKDIR $GOPATH/src/hangman/server
+
+#build the binary
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /go/bin/hangman-server
+
+FROM scratch
+
+# Copy our static executable from the builder
+COPY --from=builder /go/bin/hangman-server /bin/hangman-server
+
+COPY code/src/hangman/services/wordstore/testdata/simple.csv /data/words.csv
+
+EXPOSE 8080
+
+VOLUME /data
+
+ENTRYPOINT ["/bin/hangman-server"]
+
+CMD ["-c", "/data/words.csv"]
