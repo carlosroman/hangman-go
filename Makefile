@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := test
 
-.PHONY: test test-% build setup setup-% coveralls coverprofile-fix docker docker-%
+.PHONY: lint test test-% build setup setup-% coveralls coverprofile-fix docker docker-%
 
 NS ?= hangman
 VERSION ?= latest
@@ -9,11 +9,20 @@ DOCKER ?= docker
 DOCKER_COMPOSE_FILE := ./Docker/docker-compose.yml
 DOCKER_COMPOSE := docker-compose -f $(DOCKER_COMPOSE_FILE)
 
+lint:
+	@golangci-lint \
+	    run \
+	    code/src/hangman/...
+
 setup: setup-ginkgo setup-dep
 	@echo "Setup done"
 
 setup-ginkgo:
 	@go get -v github.com/onsi/ginkgo/ginkgo
+
+setup-golangci-lint:
+	@curl -L -s https://github.com/golangci/golangci-lint/releases/download/v${GOLANGCI_LINT_VERSION}/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-amd64.tar.gz -o /tmp/golangci-lint-linux-amd64.tar.gz
+	@tar -xzf /tmp/golangci-lint-linux-amd64.tar.gz  --strip 1 --directory ./code/bin
 
 setup-dep:
 	@curl -L -s https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 -o ./code/bin/dep

@@ -16,6 +16,7 @@ jobs:
     environment:
       GOPATH: /go/src/hangman-go/code
       DEP_VERSION: 0.4.1
+      GOLANGCI_LINT_VERSION: 1.9.1
     working_directory: /go/src/hangman-go
     steps:
       - checkout
