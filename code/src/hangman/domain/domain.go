@@ -7,7 +7,7 @@ import (
 type Status int
 
 type State struct {
-	sync.RWMutex
+	*sync.RWMutex
 	Id      string
 	Status  Status
 	Misses  int

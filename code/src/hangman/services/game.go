@@ -20,7 +20,10 @@ type inMemoryGameService struct {
 }
 
 func NewGameService(words wordstore.Store) GameService {
-	return &inMemoryGameService{w: words, games: make(map[string]*domain.State)}
+	return &inMemoryGameService{
+		w:     words,
+		games: make(map[string]*domain.State),
+	}
 }
 
 func (gs *inMemoryGameService) NewGame(d domain.Difficulty) string {
@@ -32,7 +35,8 @@ func (gs *inMemoryGameService) NewGame(d domain.Difficulty) string {
 		Difficulty: d,
 	}
 	id := uuid.NewV4().String()
-	gs.games[id] = &domain.State{Id: id, Word: wd}
+
+	gs.games[id] = &domain.State{Id: id, Word: wd, RWMutex: &sync.RWMutex{}}
 	return id
 }
 

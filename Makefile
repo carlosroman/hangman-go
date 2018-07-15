@@ -12,6 +12,7 @@ DOCKER_COMPOSE := docker-compose -f $(DOCKER_COMPOSE_FILE)
 lint:
 	@golangci-lint \
 	    run \
+	    --tests=false \
 	    code/src/hangman/...
 
 setup: setup-ginkgo setup-dep

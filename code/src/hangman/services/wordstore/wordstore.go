@@ -46,22 +46,26 @@ func NewInMemoryStoreFromCSV(csvPath string) (Store, error) {
 	r := csv.NewReader(fs)
 
 	idx := 0
-	m := &inMemoryStore{make(map[domain.Difficulty][]string)}
+	m := &inMemoryStore{
+		words: make(map[domain.Difficulty][]string),
+	}
+
 	for {
-		record, err := r.Read()
-		if err == io.EOF {
-			err = nil
+		record, rerr := r.Read()
+		if rerr == io.EOF {
 			break
 		}
 
-		if err != nil {
+		if rerr != nil {
+			err = rerr
 			break
 		}
 
 		if idx > 0 {
-			i, err := strconv.Atoi(strings.TrimSpace(record[1]))
-			if err != nil {
-				fmt.Printf("Error: %s\n", err)
+			i, terr := strconv.Atoi(strings.TrimSpace(record[1]))
+			if terr != nil {
+				fmt.Printf("Error: %s\n", terr)
+				err = terr
 				break
 			}
 
@@ -78,8 +82,8 @@ func NewInMemoryStoreFromCSV(csvPath string) (Store, error) {
 			case domain.VERY_HARD:
 				m.words[domain.VERY_HARD] = append(m.words[domain.VERY_HARD], strings.TrimSpace(record[0]))
 			default:
-				err = errors.New(fmt.Sprintf("got Difficulty '%s'", d))
-				break
+				fmt.Println(fmt.Sprintf("got Difficulty '%s'", d))
+				return m, fmt.Errorf("got Difficulty '%s'", d)
 			}
 		}
 		idx += 1

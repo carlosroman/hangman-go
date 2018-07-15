@@ -87,8 +87,9 @@ func Test_Guess(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r, m := gs.Guess(id, tt.guess)
-			assert.Equal(t, r, tt.expectFound, fmt.Sprintf("Expected Found to be %s", tt.expectFound))
-			assert.Equal(t, m, tt.expectedGuessLeft, fmt.Sprintf("Expected Guess Left to be %s", tt.expectedGuessLeft))
+			fmt.Println(tt.name)
+			assert.Equal(t, r, tt.expectFound, fmt.Sprintf("Expected Found to be %t", tt.expectFound))
+			assert.Equal(t, m, tt.expectedGuessLeft, fmt.Sprintf("Expected Guess Left to be %b", tt.expectedGuessLeft))
 			assert.Equal(t, gs.GetGame(id).Guesses, tt.expectGuesses)
 		})
 	}

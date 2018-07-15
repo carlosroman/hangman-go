@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/rivo/tview"
+	"fmt"
 )
 
 func Start(nextSlide func(p string),
@@ -23,9 +24,11 @@ func Start(nextSlide func(p string),
 	f.AddButton("Start", func() {
 		nic := f.GetFormItemByLabel("Nickname:").(*tview.InputField).GetText()
 		_, sd := f.GetFormItemByLabel("Difficulty:").(*tview.DropDown).GetCurrentOption()
-		newGame(
+		if err := newGame(
 			nic,
-			sd)
+			sd); err != nil {
+				fmt.Println(err)
+		}
 		nextSlide("go")
 	}).AddButton("Quit", stopApp)
 	f.SetBorder(true).SetTitle("New Game")

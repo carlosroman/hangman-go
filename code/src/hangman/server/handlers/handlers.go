@@ -13,7 +13,10 @@ type GameServer interface {
 }
 
 func NewGameServer(r *mux.Router, gs services.GameService) GameServer {
-	return &App{r, gs}
+	return &App{
+		r:  r,
+		gs: gs,
+	}
 }
 
 type App struct {
@@ -30,7 +33,11 @@ func (a *App) handleNewGame(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 	var n NewGame
-	decoder.Decode(&n) // todo handle error
+	if err := decoder.Decode(&n); err != nil {
+		// todo handle error
+		fmt.Println(err)
+	}
+
 	id := a.gs.NewGame(n.Difficulty.toDomainDifficulty())
 	w.Header().Set("Location", fmt.Sprintf("/game/%s", id))
 	w.WriteHeader(http.StatusCreated)
@@ -38,11 +45,15 @@ func (a *App) handleNewGame(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) handleGuess(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, _ := vars["id"] // todo: check valid UUID + handle error
+	id := vars["id"] // todo: check valid UUID + handle error
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 	var g Guess
-	decoder.Decode(&g) // todo: handle error
+	if err := decoder.Decode(&g); err != nil {
+		// todo handle error
+		fmt.Println(err)
+	}
+
 	c, gl := a.gs.Guess(id, g.Guess)
 
 	w.Header().Set("Content-Type", "application/json")
@@ -53,5 +64,8 @@ func (a *App) handleGuess(w http.ResponseWriter, r *http.Request) {
 		GuessesLeft: gl,
 	}
 
-	json.NewEncoder(w).Encode(gr)
+	if err := json.NewEncoder(w).Encode(gr); err != nil {
+		// todo handle error
+		fmt.Println(err)
+	}
 }
