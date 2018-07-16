@@ -37,3 +37,9 @@ jobs:
       - run:
           name: Upload Coverage
           command: make coveralls
+      - run:
+          name: Install linter
+          command: make setup-golangci-lint
+      - run:
+          name: Run linter
+          command: make lint

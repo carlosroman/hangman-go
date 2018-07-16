@@ -23,7 +23,7 @@ setup-ginkgo:
 
 setup-golangci-lint:
 	@curl -L -s https://github.com/golangci/golangci-lint/releases/download/v${GOLANGCI_LINT_VERSION}/golangci-lint-${GOLANGCI_LINT_VERSION}-linux-amd64.tar.gz -o /tmp/golangci-lint-linux-amd64.tar.gz
-	@tar -xzf /tmp/golangci-lint-linux-amd64.tar.gz  --strip 1 --directory ./code/bin
+	@tar -xzf /tmp/golangci-lint-linux-amd64.tar.gz  --strip 1 --directory $(GOPATH)/bin
 
 setup-dep:
 	@curl -L -s https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 -o ./code/bin/dep
