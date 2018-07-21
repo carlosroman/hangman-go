@@ -4,29 +4,30 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"hangman/server/handlers"
+	srest "hangman/server/rest"
 	"net/http"
 	"strings"
 )
 
 func (c *client) NewGame(name string, difficulty string) (string, error) {
+	var gid string
 
-	d, err := handlers.GetDifficulty(difficulty)
+	d, err := srest.GetDifficulty(difficulty)
 	if err != nil {
-		return "", err
+		return gid, err
 	}
-	p := handlers.NewGame{Difficulty: d}
+	p := srest.NewGame{Difficulty: d}
 	b := new(bytes.Buffer)
 	if err := json.NewEncoder(b).Encode(p); err != nil {
-		return "", err
+		return gid, err
 	}
 
 	req, err := http.NewRequest("POST", c.baseURL+"/game", b)
 	if err != nil {
-		return "", err
+		return gid, err
 	}
-	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	resp, err := c.hc.Do(req)
 	defer func(r *http.Response) {
 		if r != nil {
@@ -34,7 +35,10 @@ func (c *client) NewGame(name string, difficulty string) (string, error) {
 		}
 	}(resp)
 
-	var gid string
+	if err != nil {
+		return gid, err
+	}
+
 	if resp != nil {
 		if resp.StatusCode != 201 {
 			err = errors.New("new game not created")

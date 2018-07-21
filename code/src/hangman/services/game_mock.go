@@ -14,7 +14,7 @@ func (gs *GameServiceMock) NewGame(d domain.Difficulty) string {
 	return args.String(0)
 }
 
-func (gs *GameServiceMock) Guess(id string, char rune) (bool, int) {
+func (gs *GameServiceMock) Guess(id string, char rune) (correct bool, guessesLeft int) {
 	args := gs.Called(id, char)
 	return args.Bool(0), args.Int(1)
 }

@@ -56,6 +56,13 @@ func NewApp(baseUrl *string) App {
 	}
 }
 
+func NewConfiguredApp(ta tviewApplication, ac rest.ApiClient) App {
+	return &app{
+		ta: ta,
+		ac: ac,
+	}
+}
+
 type tviewApplication interface {
 	//SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKey) *tview.Application
 	//GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey

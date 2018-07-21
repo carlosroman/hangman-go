@@ -1,4 +1,4 @@
-package services
+package services_test
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"hangman/domain"
+	"hangman/services"
 	"hangman/services/wordstore"
 	"testing"
 )
@@ -27,7 +28,7 @@ func Test_newGame(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			s := new(wordstore.StoreMock)
 			s.On("GetWord", mock.AnythingOfType("domain.Difficulty")).Return("word", nil).Once()
-			got := NewGameService(s).NewGame(domain.NORMAL)
+			got := services.NewGameService(s).NewGame(domain.NORMAL)
 			u, err := uuid.FromString(got)
 			assert.NoError(t, err)
 			assert.Equal(t, uuid.V4, u.Version())
@@ -39,7 +40,7 @@ func Test_newGame(t *testing.T) {
 func Test_NewGames(t *testing.T) {
 	ws := wordstore.NewMock()
 	ws.On("GetWord", mock.AnythingOfType("domain.Difficulty")).Return("word", nil).Twice()
-	gs := NewGameService(ws)
+	gs := services.NewGameService(ws)
 	one := gs.NewGame(domain.EASY)
 	got := gs.NewGame(domain.HARD)
 	assert.NotEqual(t, one, got, "Should both be different")
@@ -48,7 +49,7 @@ func Test_NewGames(t *testing.T) {
 func Test_GetGame(t *testing.T) {
 	ws := wordstore.NewMock()
 	ws.On("GetWord", mock.AnythingOfType("domain.Difficulty")).Return("word", nil).Twice()
-	gs := NewGameService(ws)
+	gs := services.NewGameService(ws)
 	tests := []struct {
 		name       string
 		difficulty domain.Difficulty
@@ -69,7 +70,7 @@ func Test_GetGame(t *testing.T) {
 func Test_Guess(t *testing.T) {
 	ws := wordstore.NewMock()
 	ws.On("GetWord", mock.AnythingOfType("domain.Difficulty")).Return("word", nil).Once()
-	gs := NewGameService(ws)
+	gs := services.NewGameService(ws)
 	id := gs.NewGame(domain.VERY_HARD)
 	assert.Empty(t, gs.GetGame(id).Misses)
 

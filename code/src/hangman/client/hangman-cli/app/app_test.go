@@ -1,4 +1,4 @@
-package app
+package app_test
 
 import (
 	"errors"
@@ -8,6 +8,7 @@ import (
 	"github.com/rivo/tview"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"hangman/client/hangman-cli/app"
 	"hangman/domain"
 	"unsafe"
 )
@@ -16,17 +17,14 @@ var _ = Describe("App", func() {
 	var (
 		ta *TvViewApplicationMock
 		ac *ApiClientMock
-		a  App
+		a  app.App
 	)
 	Describe("Application functions", func() {
 
 		BeforeEach(func() {
 			ta = &TvViewApplicationMock{}
 			ac = &ApiClientMock{}
-			a = &app{
-				ta: ta,
-				ac: ac,
-			}
+			a = app.NewConfiguredApp(ta, ac)
 		})
 
 		Context("when stop called", func() {

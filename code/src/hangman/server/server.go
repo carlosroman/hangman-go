@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/urfave/cli"
-	"hangman/server/handlers"
+	"hangman/server/rest"
 	"hangman/services"
 	"hangman/services/wordstore"
 	"hangman/utils"
@@ -39,7 +39,7 @@ func main() {
 	app.Action = func(c *cli.Context) error {
 		r := mux.NewRouter()
 		ws, _ := wordstore.NewInMemoryStoreFromCSV(csvPath) // todo: deal with error
-		gs := handlers.NewGameServer(r, services.NewGameService(ws))
+		gs := rest.NewGameServer(r, services.NewGameService(ws))
 		gs.InitialiseHandlers()
 		srv := &http.Server{
 			Handler: r,

@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/rivo/tview"
 	"fmt"
+	"github.com/rivo/tview"
 )
 
 func Start(nextSlide func(p string),
@@ -27,7 +27,7 @@ func Start(nextSlide func(p string),
 		if err := newGame(
 			nic,
 			sd); err != nil {
-				fmt.Println(err)
+			fmt.Println(err)
 		}
 		nextSlide("go")
 	}).AddButton("Quit", stopApp)
