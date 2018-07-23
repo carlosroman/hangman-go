@@ -29,7 +29,7 @@ func NewGameService(words wordstore.Store) GameService {
 func (gs *inMemoryGameService) NewGame(d domain.Difficulty) string {
 	gs.Lock()
 	defer gs.Unlock()
-	w, _ := gs.w.GetWord(d)
+	w, _ := gs.w.GetWord(d) // todo: error handle
 	wd := domain.Word{
 		Letters:    []rune(w),
 		Difficulty: d,
