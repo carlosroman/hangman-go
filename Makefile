@@ -8,6 +8,7 @@ VERSION ?= latest
 DOCKER ?= docker
 DOCKER_COMPOSE_FILE := ./Docker/docker-compose.yml
 DOCKER_COMPOSE := docker-compose -f $(DOCKER_COMPOSE_FILE)
+GINKGO_COMPILERS ?= 2
 
 lint:
 	@golangci-lint \
@@ -59,7 +60,7 @@ test: test-clean
         --outputdir=target \
         --trace \
         --race \
-        --compilers=2 \
+        --compilers=$(GINKGO_COMPILERS) \
         ./code/src/hangman/
 
 coverprofile-fix:
