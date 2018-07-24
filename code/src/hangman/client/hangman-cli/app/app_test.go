@@ -116,6 +116,11 @@ func (c *ApiClientMock) NewGame(name string, difficulty string) (string, error) 
 	return args.String(0), args.Error(1)
 }
 
+func (c *ApiClientMock) MakeGuess(gid string, guess rune) (bool, int8, error) {
+	args := c.Called(gid, guess)
+	return args.Bool(0), int8(args.Int(1)), args.Error(2)
+}
+
 func (c *ApiClientMock) givenNewGameReturns(id string, err error) {
 	c.
 		On("NewGame", mock.AnythingOfType("string"), mock.AnythingOfType("string")).

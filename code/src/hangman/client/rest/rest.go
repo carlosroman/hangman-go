@@ -10,7 +10,8 @@ func New(cfg *Config) ApiClient {
 }
 
 type ApiClient interface {
-	NewGame(name string, difficulty string) (string, error)
+	NewGame(name string, difficulty string) (gid string, err error)
+	MakeGuess(gid string, guess rune) (correct bool, guessesLeft int8, err error)
 }
 
 type client struct {

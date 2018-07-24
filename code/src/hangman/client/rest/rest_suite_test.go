@@ -9,5 +9,5 @@ import (
 
 func TestRest(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Rest Suite")
+	RunSpecs(t, "Client Rest Suite")
 }

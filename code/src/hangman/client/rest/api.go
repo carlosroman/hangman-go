@@ -1,12 +1,8 @@
 package rest
 
 import (
-	"bytes"
-	"encoding/json"
-	"errors"
 	srest "hangman/server/rest"
 	"net/http"
-	"strings"
 )
 
 func (c *client) NewGame(name string, difficulty string) (string, error) {
@@ -16,18 +12,12 @@ func (c *client) NewGame(name string, difficulty string) (string, error) {
 	if err != nil {
 		return gid, err
 	}
-	p := srest.NewGame{Difficulty: d}
-	b := new(bytes.Buffer)
-	if err := json.NewEncoder(b).Encode(p); err != nil {
-		return gid, err
-	}
 
-	req, err := http.NewRequest("POST", c.baseURL+"/game", b)
+	req, err := newGameRequest(c.baseURL, d)
 	if err != nil {
 		return gid, err
 	}
 
-	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	resp, err := c.hc.Do(req)
 	defer func(r *http.Response) {
 		if r != nil {
@@ -39,14 +29,25 @@ func (c *client) NewGame(name string, difficulty string) (string, error) {
 		return gid, err
 	}
 
-	if resp != nil {
-		if resp.StatusCode != 201 {
-			err = errors.New("new game not created")
-		} else {
-			l := resp.Header.Get("Location")
-			gid = strings.Split(l, "/")[2]
-		}
+	return parseNewGameResponse(resp)
+}
+
+func (c *client) MakeGuess(gid string, guess rune) (correct bool, guessesLeft int8, err error) {
+	req, err := newGuessRequest(c.baseURL, gid, guess)
+	if err != nil {
+		return correct, guessesLeft, err
 	}
 
-	return gid, err
+	resp, err := c.hc.Do(req)
+	defer func(r *http.Response) {
+		if r != nil {
+			r.Body.Close()
+		}
+	}(resp)
+
+	if err != nil {
+		return correct, guessesLeft, err
+	}
+
+	return parseNewGuessResponse(resp)
 }
