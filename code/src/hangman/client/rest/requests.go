@@ -49,16 +49,16 @@ func newGuessRequest(baseURL string, gid string, guess rune) (req *http.Request,
 	return req, err
 }
 
-func parseNewGuessResponse(resp *http.Response) (correct bool, guessesLeft int8, err error) {
+func parseNewGuessResponse(resp *http.Response) (correct bool, missesLeft int8, gameOver bool, err error) {
 	if resp.StatusCode != 200 {
 		fmt.Println(fmt.Sprintf("Status code was '%d'", resp.StatusCode))
-		return correct, guessesLeft, errors.New("guess could not be made")
+		return correct, missesLeft, gameOver, errors.New("guess could not be made")
 	}
 
 	var gr srest.GuessResponse
 
 	if err := json.NewDecoder(resp.Body).Decode(&gr); err != nil {
-		return correct, guessesLeft, err
+		return correct, missesLeft, gameOver, err
 	}
-	return gr.Correct, int8(gr.GuessesLeft), err
+	return gr.Correct, int8(gr.MissesLeft), gr.GameOver, err
 }

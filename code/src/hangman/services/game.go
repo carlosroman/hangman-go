@@ -7,10 +7,14 @@ import (
 	"sync"
 )
 
+const (
+	maxMisses = 8
+)
+
 type GameService interface {
-	NewGame(d domain.Difficulty) string
-	Guess(id string, char rune) (bool, int)
-	GetGame(id string) domain.State
+	NewGame(d domain.Difficulty) (gameId string)
+	Guess(id string, char rune) (correct bool, missesLeft int, gameOver bool)
+	GetGame(id string) (game domain.State)
 }
 
 type inMemoryGameService struct {
@@ -40,18 +44,25 @@ func (gs *inMemoryGameService) NewGame(d domain.Difficulty) string {
 	return id
 }
 
-func (gs *inMemoryGameService) Guess(id string, char rune) (bool, int) {
+func (gs *inMemoryGameService) Guess(id string, char rune) (bool, int, bool) {
 	gs.RLock()
 	defer gs.RUnlock()
 	gs.games[id].Lock()
 	defer gs.games[id].Unlock()
 
 	gs.games[id].Guesses = append(gs.games[id].Guesses, char)
+	if gs.games[id].Misses == maxMisses {
+		return false, maxMisses - gs.games[id].Misses, true
+	}
+
 	f := gs.games[id].Word.Contains(char)
 	if !f {
 		gs.games[id].Misses += 1
+		if gs.games[id].Misses == maxMisses {
+			return f, maxMisses - gs.games[id].Misses, true
+		}
 	}
-	return f, 8 - gs.games[id].Misses
+	return f, maxMisses - gs.games[id].Misses, false
 }
 
 func (gs *inMemoryGameService) GetGame(id string) domain.State {

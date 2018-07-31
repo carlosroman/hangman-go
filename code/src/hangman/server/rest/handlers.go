@@ -54,14 +54,15 @@ func (a *App) handleGuess(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
-	c, gl := a.gs.Guess(id, g.Guess)
+	c, gl, gov := a.gs.Guess(id, g.Guess)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
 	gr := GuessResponse{
-		Correct:     c,
-		GuessesLeft: gl,
+		Correct:    c,
+		MissesLeft: gl,
+		GameOver:   gov,
 	}
 
 	if err := json.NewEncoder(w).Encode(gr); err != nil {

@@ -84,9 +84,10 @@ var _ = Describe("Game", func() {
 			})
 
 			type testGuess struct {
-				guess       rune
-				correct     bool
-				guessesLeft int
+				guess      rune
+				correct    bool
+				missesLeft int
+				gameOver   bool
 			}
 
 			type guesses []testGuess
@@ -94,23 +95,44 @@ var _ = Describe("Game", func() {
 			DescribeTable("give the following guesses", func(gss guesses) {
 				Expect(gss).NotTo(BeEmpty())
 				for _, g := range gss {
-					ex, lft := gs.Guess(id, g.guess)
+					ex, lft, gover := gs.Guess(id, g.guess)
 					Expect(ex).To(Equal(g.correct), fmt.Sprintf("Expect guess to be '%t'", g.correct))
-					Expect(lft).To(Equal(g.guessesLeft), fmt.Sprintf("Expect guesses left to be '%d'", g.guessesLeft))
+					Expect(lft).To(Equal(g.missesLeft), fmt.Sprintf("Expect misses left to be '%d'", g.missesLeft))
+					Expect(gover).To(Equal(g.gameOver), fmt.Sprintf("Expect game over to be '%t'", g.gameOver))
 				}
 
 			}, Entry("First guess", guesses{{
-				guess: 'w', correct: true, guessesLeft: 8},
+				guess: 'w', correct: true, missesLeft: 8, gameOver: false},
 			}), Entry("Two guess, first good, second fail", guesses{
-				{guess: 'w', correct: true, guessesLeft: 8},
-				{guess: 'b', correct: false, guessesLeft: 7},
+				{guess: 'w', correct: true, missesLeft: 8, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 7, gameOver: false},
 			}), Entry("Two guess, first fail, second good", guesses{
-				{guess: 'b', correct: false, guessesLeft: 7},
-				{guess: 'w', correct: true, guessesLeft: 7},
+				{guess: 'b', correct: false, missesLeft: 7, gameOver: false},
+				{guess: 'w', correct: true, missesLeft: 7, gameOver: false},
 			}), Entry("Three guess, 1st good, 2nd bad, 3d good", guesses{
-				{guess: 'w', correct: true, guessesLeft: 8},
-				{guess: 'b', correct: false, guessesLeft: 7},
-				{guess: 'd', correct: true, guessesLeft: 7},
+				{guess: 'w', correct: true, missesLeft: 8, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 7, gameOver: false},
+				{guess: 'd', correct: true, missesLeft: 7, gameOver: false},
+			}), Entry("Eight bad guesses", guesses{
+				{guess: 'b', correct: false, missesLeft: 7, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 6, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 5, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 4, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 3, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 2, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 1, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 0, gameOver: true},
+			}), Entry("Eight bad guesses and a correct one still means game over and guess correct is false", guesses{
+				{guess: 'w', correct: true, missesLeft: 8, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 7, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 6, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 5, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 4, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 3, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 2, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 1, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 0, gameOver: true},
+				{guess: 'w', correct: false, missesLeft: 0, gameOver: true},
 			}),
 			)
 		})
