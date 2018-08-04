@@ -11,9 +11,12 @@ DOCKER_COMPOSE := docker-compose -f $(DOCKER_COMPOSE_FILE)
 GINKGO_COMPILERS ?= 2
 
 lint:
+	@echo "Running golangci-lint"
 	@golangci-lint \
 	    run \
 	    --tests=false \
+	    --verbose \
+	    --concurrency=$(GINKGO_COMPILERS) \
 	    code/src/hangman/...
 
 setup: setup-ginkgo setup-dep
