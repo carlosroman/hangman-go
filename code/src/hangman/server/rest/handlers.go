@@ -54,7 +54,11 @@ func (a *App) handleGuess(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
-	c, gl, gov := a.gs.Guess(id, g.Guess)
+	c, gl, gov, ls := a.gs.Guess(id, g.Guess)
+	ls2s := make([]string, len(ls))
+	for i, l := range ls {
+		ls2s[i] = string(l)
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -63,6 +67,7 @@ func (a *App) handleGuess(w http.ResponseWriter, r *http.Request) {
 		Correct:    c,
 		MissesLeft: gl,
 		GameOver:   gov,
+		Letters:    ls2s,
 	}
 
 	if err := json.NewEncoder(w).Encode(gr); err != nil {

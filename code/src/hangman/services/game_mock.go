@@ -14,9 +14,10 @@ func (gs *GameServiceMock) NewGame(d domain.Difficulty) string {
 	return args.String(0)
 }
 
-func (gs *GameServiceMock) Guess(id string, char rune) (correct bool, missesLeft int, gameOver bool) {
+func (gs *GameServiceMock) Guess(id string, char rune) (correct bool, missesLeft int, gameOver bool, letters []rune) {
 	args := gs.Called(id, char)
-	return args.Bool(0), args.Int(1), args.Bool(2)
+	ls := args.Get(3)
+	return args.Bool(0), args.Int(1), args.Bool(2), ls.([]rune)
 }
 
 func (gs *GameServiceMock) GetGame(id string) domain.State {

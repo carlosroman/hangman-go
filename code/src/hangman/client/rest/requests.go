@@ -8,6 +8,7 @@ import (
 	srest "hangman/server/rest"
 	"net/http"
 	"strings"
+	"unicode/utf8"
 )
 
 func newGameRequest(baseURL string, d srest.Difficulty) (req *http.Request, err error) {
@@ -49,16 +50,20 @@ func newGuessRequest(baseURL string, gid string, guess rune) (req *http.Request,
 	return req, err
 }
 
-func parseNewGuessResponse(resp *http.Response) (correct bool, missesLeft int8, gameOver bool, err error) {
+func parseNewGuessResponse(resp *http.Response) (correct bool, missesLeft int8, gameOver bool, currentWord []rune, err error) {
 	if resp.StatusCode != 200 {
 		fmt.Println(fmt.Sprintf("Status code was '%d'", resp.StatusCode))
-		return correct, missesLeft, gameOver, errors.New("guess could not be made")
+		return correct, missesLeft, gameOver, currentWord, errors.New("guess could not be made")
 	}
 
 	var gr srest.GuessResponse
 
 	if err := json.NewDecoder(resp.Body).Decode(&gr); err != nil {
-		return correct, missesLeft, gameOver, err
+		return correct, missesLeft, gameOver, currentWord, err
 	}
-	return gr.Correct, int8(gr.MissesLeft), gr.GameOver, err
+	currentWord = make([]rune, len(gr.Letters))
+	for i, l := range gr.Letters {
+		currentWord[i], _ = utf8.DecodeRuneInString(l)
+	}
+	return gr.Correct, int8(gr.MissesLeft), gr.GameOver, currentWord, err
 }

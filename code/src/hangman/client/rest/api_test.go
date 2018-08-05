@@ -50,7 +50,7 @@ var _ = Describe("Api", func() {
 			burl := "http://us\ner:pass\nword@foo.com"
 			cfg.BaseURL = &burl
 			c = cli.New(cfg)
-			_, _, _, err := c.MakeGuess(randomString(12), 'a')
+			_, _, _, _, err := c.MakeGuess(randomString(12), 'a')
 			fmt.Fprintln(GinkgoWriter, err)
 			Expect(err).ShouldNot(Succeed())
 		})
@@ -123,8 +123,8 @@ var _ = Describe("Api", func() {
 
 		It("should return correct number of guesses left", func() {
 			gid := uuid.NewV4().String()
-			mh.OnGuessReturn(gid, 'a', true, 8, false)
-			_, missesLeft, _, err := c.MakeGuess(gid, 'a')
+			mh.OnGuessReturn(gid, 'a', true, 8, false, []rune("a_b_c_d_e"))
+			_, missesLeft, _, _, err := c.MakeGuess(gid, 'a')
 			Expect(err).To(Succeed())
 			Expect(missesLeft).To(Equal(int8(8)))
 			mh.AssertExpectations(GinkgoT())
@@ -132,8 +132,8 @@ var _ = Describe("Api", func() {
 
 		It("should return true when guess correct", func() {
 			gid := uuid.NewV4().String()
-			mh.OnGuessReturn(gid, 'a', true, 8, false)
-			g, _, _, err := c.MakeGuess(gid, 'a')
+			mh.OnGuessReturn(gid, 'a', true, 8, false, []rune("a_b_c_d_e"))
+			g, _, _, _, err := c.MakeGuess(gid, 'a')
 			Expect(err).To(Succeed())
 			Expect(g).To(BeTrue(), "Expect guess to be correct (true)")
 			mh.AssertExpectations(GinkgoT())
@@ -141,8 +141,8 @@ var _ = Describe("Api", func() {
 
 		It("should return false when guess incorrect", func() {
 			gid := uuid.NewV4().String()
-			mh.OnGuessReturn(gid, 'a', false, 8, false)
-			g, _, _, err := c.MakeGuess(gid, 'a')
+			mh.OnGuessReturn(gid, 'a', false, 8, false, []rune("a_b_c_d_e"))
+			g, _, _, _, err := c.MakeGuess(gid, 'a')
 			Expect(err).To(Succeed())
 			Expect(g).To(BeFalse(), "Expect guess to be incorrect (false)")
 			mh.AssertExpectations(GinkgoT())
@@ -150,17 +150,17 @@ var _ = Describe("Api", func() {
 
 		It("should return true when game over", func() {
 			gid := uuid.NewV4().String()
-			mh.OnGuessReturn(gid, 'a', false, 0, true)
-			_, _, g, err := c.MakeGuess(gid, 'a')
+			mh.OnGuessReturn(gid, 'a', false, 0, true, []rune("a_b_c_d_e"))
+			_, _, g, _, err := c.MakeGuess(gid, 'a')
 			Expect(err).To(Succeed())
-			Expect(g).To(BeTrue(), "Expect game over to be true")
+			Expect(g).To(BeTrue(), "Expect game over to be true", []rune("a_b_c_d_e"))
 			mh.AssertExpectations(GinkgoT())
 		})
 
 		It("should return false when game not over", func() {
 			gid := uuid.NewV4().String()
-			mh.OnGuessReturn(gid, 'a', false, 0, false)
-			_, _, g, err := c.MakeGuess(gid, 'a')
+			mh.OnGuessReturn(gid, 'a', false, 0, false, []rune("a_b_c_d_e"))
+			_, _, g, _, err := c.MakeGuess(gid, 'a')
 			Expect(err).To(Succeed())
 			Expect(g).To(BeFalse(), "Expect game over to be false")
 			mh.AssertExpectations(GinkgoT())
@@ -168,9 +168,17 @@ var _ = Describe("Api", func() {
 
 		It("should return error when guess could not be made", func() {
 			gid := randomString(12)
-			mh.OnGuessReturn(gid, 'a', true, 8, false)
-			_, _, _, err := c.MakeGuess(gid, 'a')
+			mh.OnGuessReturn(gid, 'a', true, 8, false, []rune("a_b_c_d_e"))
+			_, _, _, _, err := c.MakeGuess(gid, 'a')
 			Expect(err).NotTo(Succeed())
+		})
+
+		It("should return correct word", func() {
+			gid := uuid.NewV4().String()
+			mh.OnGuessReturn(gid, 'a', true, 8, false, []rune("a_b_c_d_e"))
+			_, _, _, ls, err := c.MakeGuess(gid, 'a')
+			Expect(err).To(Succeed())
+			Expect(ls).To(Equal([]rune("a_b_c_d_e")))
 		})
 	})
 })

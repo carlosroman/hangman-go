@@ -51,7 +51,7 @@ var _ = Describe("Handlers", func() {
 
 			It("should make a correct guess", func() {
 
-				mh.OnGuessReturn("123e4567-e89b-12d3-a456-426655440000", 'a', true, 7331, false)
+				mh.OnGuessReturn("123e4567-e89b-12d3-a456-426655440000", 'a', true, 7331, false, []rune("a_b_c_d_e"))
 
 				b := rest.Guess{Guess: 'a'}
 				bs, err := json.Marshal(b)
@@ -73,6 +73,7 @@ var _ = Describe("Handlers", func() {
 				expected, err := jsonToString(rest.GuessResponse{
 					Correct:    true,
 					MissesLeft: 7331,
+					Letters:    []string{"a", "_", "b", "_", "c", "_", "d", "_", "e"},
 				})
 				Expect(err).Should(Succeed())
 				Expect(actual).Should(MatchJSON(expected))
@@ -80,7 +81,7 @@ var _ = Describe("Handlers", func() {
 
 			It("should make a bad guess", func() {
 
-				mh.OnGuessReturn("123e4567-e89b-12d3-a456-426655440000", 'a', false, 1337, false)
+				mh.OnGuessReturn("123e4567-e89b-12d3-a456-426655440000", 'a', false, 1337, false, []rune("a_b_c_d_e"))
 
 				b := rest.Guess{Guess: 'a'}
 				bs, err := json.Marshal(b)
@@ -102,6 +103,7 @@ var _ = Describe("Handlers", func() {
 				expected, err := jsonToString(rest.GuessResponse{
 					Correct:    false,
 					MissesLeft: 1337,
+					Letters:    []string{"a", "_", "b", "_", "c", "_", "d", "_", "e"},
 				})
 				Expect(err).To(Succeed())
 				Expect(actual).Should(MatchJSON(expected))
@@ -109,7 +111,7 @@ var _ = Describe("Handlers", func() {
 
 			It("should make a guess but game over", func() {
 
-				mh.OnGuessReturn("123e4567-e89b-12d3-a456-426655440000", 'a', false, 0, true)
+				mh.OnGuessReturn("123e4567-e89b-12d3-a456-426655440000", 'a', false, 0, true, []rune("a_b_c_d_e"))
 
 				b := rest.Guess{Guess: 'a'}
 				bs, err := json.Marshal(b)
@@ -132,6 +134,7 @@ var _ = Describe("Handlers", func() {
 					Correct:    false,
 					MissesLeft: 0,
 					GameOver:   true,
+					Letters:    []string{"a", "_", "b", "_", "c", "_", "d", "_", "e"},
 				})
 				Expect(err).To(Succeed())
 				Expect(actual).Should(MatchJSON(expected))

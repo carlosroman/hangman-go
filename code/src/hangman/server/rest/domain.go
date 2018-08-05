@@ -11,10 +11,10 @@ type Guess struct {
 }
 
 type GuessResponse struct {
-	Correct    bool `json:"correct"`
-	MissesLeft int  `json:"missesLeft"`
-	GameOver   bool `json:"gameOver"`
-	//Letters     []rune `json:"letters"`
+	Correct    bool     `json:"correct"`
+	MissesLeft int      `json:"missesLeft"`
+	GameOver   bool     `json:"gameOver"`
+	Letters    []string `json:"letters"`
 }
 
 type Difficulty string

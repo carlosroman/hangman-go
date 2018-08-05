@@ -73,21 +73,24 @@ var _ = Describe("Game", func() {
 		Describe("given guessing a letter", func() {
 
 			var (
-				id string
+				id          string
+				wordToGuess string
 			)
 			BeforeEach(func() {
-
+				// letterGuessed: []rune{'w', 'i', 't', 'h', 'd', 'r', 'a', 'w'}
+				wordToGuess = "withdraw"
 				ws.On("GetWord", mock.AnythingOfType("domain.Difficulty")).
-					Return("word", nil).
+					Return(wordToGuess, nil).
 					Once()
 				id = gs.NewGame(domain.VERY_HARD)
 			})
 
 			type testGuess struct {
-				guess      rune
-				correct    bool
-				missesLeft int
-				gameOver   bool
+				guess         rune
+				correct       bool
+				missesLeft    int
+				gameOver      bool
+				letterGuessed []rune
 			}
 
 			type guesses []testGuess
@@ -95,44 +98,45 @@ var _ = Describe("Game", func() {
 			DescribeTable("give the following guesses", func(gss guesses) {
 				Expect(gss).NotTo(BeEmpty())
 				for _, g := range gss {
-					ex, lft, gover := gs.Guess(id, g.guess)
+					ex, lft, gover, lg := gs.Guess(id, g.guess)
 					Expect(ex).To(Equal(g.correct), fmt.Sprintf("Expect guess to be '%t'", g.correct))
 					Expect(lft).To(Equal(g.missesLeft), fmt.Sprintf("Expect misses left to be '%d'", g.missesLeft))
 					Expect(gover).To(Equal(g.gameOver), fmt.Sprintf("Expect game over to be '%t'", g.gameOver))
+					Expect(lg).To(Equal(g.letterGuessed), fmt.Sprintf("Expected '%s' but got '%s'", string(g.letterGuessed), string(lg)))
 				}
 
 			}, Entry("First guess", guesses{{
-				guess: 'w', correct: true, missesLeft: 8, gameOver: false},
+				guess: 'w', correct: true, missesLeft: 8, gameOver: false, letterGuessed: []rune{'w', '_', '_', '_', '_', '_', '_', 'w'}},
 			}), Entry("Two guess, first good, second fail", guesses{
-				{guess: 'w', correct: true, missesLeft: 8, gameOver: false},
-				{guess: 'b', correct: false, missesLeft: 7, gameOver: false},
+				{guess: 'w', correct: true, missesLeft: 8, gameOver: false, letterGuessed: []rune{'w', '_', '_', '_', '_', '_', '_', 'w'}},
+				{guess: 'b', correct: false, missesLeft: 7, gameOver: false, letterGuessed: []rune{'w', '_', '_', '_', '_', '_', '_', 'w'}},
 			}), Entry("Two guess, first fail, second good", guesses{
-				{guess: 'b', correct: false, missesLeft: 7, gameOver: false},
-				{guess: 'w', correct: true, missesLeft: 7, gameOver: false},
+				{guess: 'b', correct: false, missesLeft: 7, gameOver: false, letterGuessed: []rune{'_', '_', '_', '_', '_', '_', '_', '_'}},
+				{guess: 'w', correct: true, missesLeft: 7, gameOver: false, letterGuessed: []rune{'w', '_', '_', '_', '_', '_', '_', 'w'}},
 			}), Entry("Three guess, 1st good, 2nd bad, 3d good", guesses{
-				{guess: 'w', correct: true, missesLeft: 8, gameOver: false},
-				{guess: 'b', correct: false, missesLeft: 7, gameOver: false},
-				{guess: 'd', correct: true, missesLeft: 7, gameOver: false},
+				{guess: 'w', correct: true, missesLeft: 8, gameOver: false, letterGuessed: []rune{'w', '_', '_', '_', '_', '_', '_', 'w'}},
+				{guess: 'b', correct: false, missesLeft: 7, gameOver: false, letterGuessed: []rune{'w', '_', '_', '_', '_', '_', '_', 'w'}},
+				{guess: 'd', correct: true, missesLeft: 7, gameOver: false, letterGuessed: []rune{'w', '_', '_', '_', 'd', '_', '_', 'w'}},
 			}), Entry("Eight bad guesses", guesses{
-				{guess: 'b', correct: false, missesLeft: 7, gameOver: false},
-				{guess: 'b', correct: false, missesLeft: 6, gameOver: false},
-				{guess: 'b', correct: false, missesLeft: 5, gameOver: false},
-				{guess: 'b', correct: false, missesLeft: 4, gameOver: false},
-				{guess: 'b', correct: false, missesLeft: 3, gameOver: false},
-				{guess: 'b', correct: false, missesLeft: 2, gameOver: false},
-				{guess: 'b', correct: false, missesLeft: 1, gameOver: false},
-				{guess: 'b', correct: false, missesLeft: 0, gameOver: true},
+				{guess: 'b', correct: false, missesLeft: 7, gameOver: false, letterGuessed: []rune{'_', '_', '_', '_', '_', '_', '_', '_'}},
+				{guess: 'b', correct: false, missesLeft: 6, gameOver: false, letterGuessed: []rune{'_', '_', '_', '_', '_', '_', '_', '_'}},
+				{guess: 'b', correct: false, missesLeft: 5, gameOver: false, letterGuessed: []rune{'_', '_', '_', '_', '_', '_', '_', '_'}},
+				{guess: 'b', correct: false, missesLeft: 4, gameOver: false, letterGuessed: []rune{'_', '_', '_', '_', '_', '_', '_', '_'}},
+				{guess: 'b', correct: false, missesLeft: 3, gameOver: false, letterGuessed: []rune{'_', '_', '_', '_', '_', '_', '_', '_'}},
+				{guess: 'b', correct: false, missesLeft: 2, gameOver: false, letterGuessed: []rune{'_', '_', '_', '_', '_', '_', '_', '_'}},
+				{guess: 'b', correct: false, missesLeft: 1, gameOver: false, letterGuessed: []rune{'_', '_', '_', '_', '_', '_', '_', '_'}},
+				{guess: 'b', correct: false, missesLeft: 0, gameOver: true, letterGuessed: []rune{'_', '_', '_', '_', '_', '_', '_', '_'}},
 			}), Entry("Eight bad guesses and a correct one still means game over and guess correct is false", guesses{
-				{guess: 'w', correct: true, missesLeft: 8, gameOver: false},
-				{guess: 'b', correct: false, missesLeft: 7, gameOver: false},
-				{guess: 'b', correct: false, missesLeft: 6, gameOver: false},
-				{guess: 'b', correct: false, missesLeft: 5, gameOver: false},
-				{guess: 'b', correct: false, missesLeft: 4, gameOver: false},
-				{guess: 'b', correct: false, missesLeft: 3, gameOver: false},
-				{guess: 'b', correct: false, missesLeft: 2, gameOver: false},
-				{guess: 'b', correct: false, missesLeft: 1, gameOver: false},
-				{guess: 'b', correct: false, missesLeft: 0, gameOver: true},
-				{guess: 'w', correct: false, missesLeft: 0, gameOver: true},
+				{guess: 'w', correct: true, missesLeft: 8, gameOver: false, letterGuessed: []rune{'w', '_', '_', '_', '_', '_', '_', 'w'}},
+				{guess: 'b', correct: false, missesLeft: 7, gameOver: false, letterGuessed: []rune{'w', '_', '_', '_', '_', '_', '_', 'w'}},
+				{guess: 'b', correct: false, missesLeft: 6, gameOver: false, letterGuessed: []rune{'w', '_', '_', '_', '_', '_', '_', 'w'}},
+				{guess: 'b', correct: false, missesLeft: 5, gameOver: false, letterGuessed: []rune{'w', '_', '_', '_', '_', '_', '_', 'w'}},
+				{guess: 'b', correct: false, missesLeft: 4, gameOver: false, letterGuessed: []rune{'w', '_', '_', '_', '_', '_', '_', 'w'}},
+				{guess: 'b', correct: false, missesLeft: 3, gameOver: false, letterGuessed: []rune{'w', '_', '_', '_', '_', '_', '_', 'w'}},
+				{guess: 'b', correct: false, missesLeft: 2, gameOver: false, letterGuessed: []rune{'w', '_', '_', '_', '_', '_', '_', 'w'}},
+				{guess: 'b', correct: false, missesLeft: 1, gameOver: false, letterGuessed: []rune{'w', '_', '_', '_', '_', '_', '_', 'w'}},
+				{guess: 'b', correct: false, missesLeft: 0, gameOver: true, letterGuessed: []rune{'w', '_', '_', '_', '_', '_', '_', 'w'}},
+				{guess: 'w', correct: false, missesLeft: 0, gameOver: true, letterGuessed: []rune{'w', '_', '_', '_', '_', '_', '_', 'w'}},
 			}),
 			)
 		})

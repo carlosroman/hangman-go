@@ -44,16 +44,31 @@ func (d Difficulty) String() string {
 	return names[d-1]
 }
 
-type Word struct {
-	Letters    []rune
-	Difficulty Difficulty
+func NewWord(word string, difficulty Difficulty) Word {
+	w := Word{
+		Letters:    []rune(word),
+		Difficulty: difficulty,
+	}
+	lg := make([]rune, len(w.Letters))
+	for i := range lg {
+		lg[i] = '_'
+	}
+	w.LetterGuessed = lg
+	return w
 }
 
-func (w *Word) Contains(l rune) bool {
-	for _, value := range w.Letters {
+type Word struct {
+	Letters       []rune
+	Difficulty    Difficulty
+	LetterGuessed []rune
+}
+
+func (w *Word) Contains(l rune) (correct bool) {
+	for i, value := range w.Letters {
 		if value == l {
-			return true
+			w.LetterGuessed[i] = l
+			correct = true
 		}
 	}
-	return false
+	return correct
 }

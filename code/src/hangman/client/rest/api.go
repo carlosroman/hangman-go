@@ -32,10 +32,10 @@ func (c *client) NewGame(name string, difficulty string) (string, error) {
 	return parseNewGameResponse(resp)
 }
 
-func (c *client) MakeGuess(gid string, guess rune) (correct bool, missesLeft int8, gameOver bool, err error) {
+func (c *client) MakeGuess(gid string, guess rune) (correct bool, missesLeft int8, gameOver bool, currentWord []rune, err error) {
 	req, err := newGuessRequest(c.baseURL, gid, guess)
 	if err != nil {
-		return correct, missesLeft, gameOver, err
+		return correct, missesLeft, gameOver, currentWord, err
 	}
 
 	resp, err := c.hc.Do(req)
@@ -46,7 +46,7 @@ func (c *client) MakeGuess(gid string, guess rune) (correct bool, missesLeft int
 	}(resp)
 
 	if err != nil {
-		return correct, missesLeft, gameOver, err
+		return correct, missesLeft, gameOver, currentWord, err
 	}
 
 	return parseNewGuessResponse(resp)

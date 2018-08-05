@@ -13,7 +13,7 @@ type MockHandlers interface {
 	GetServer() *httptest.Server
 	OnNewGameTimeout()
 	OnNewGameReturn(id string)
-	OnGuessReturn(id string, char rune, correct bool, missesLeft int, gameOver bool)
+	OnGuessReturn(id string, char rune, correct bool, missesLeft int, gameOver bool, letters []rune)
 	AssertExpectations(t mock.TestingT)
 	Close()
 	URL() string
@@ -47,8 +47,8 @@ func (h *httpServer) OnNewGameTimeout() {
 	h.gs.On("NewGame", mock.Anything).After(1 * time.Second).Return("timeout")
 }
 
-func (h *httpServer) OnGuessReturn(id string, char rune, correct bool, missesLeft int, gameOver bool) {
-	h.gs.On("Guess", id, char).Return(correct, missesLeft, gameOver)
+func (h *httpServer) OnGuessReturn(id string, char rune, correct bool, missesLeft int, gameOver bool, letters []rune) {
+	h.gs.On("Guess", id, char).Return(correct, missesLeft, gameOver, letters)
 }
 
 func (h *httpServer) AssertExpectations(t mock.TestingT) {
