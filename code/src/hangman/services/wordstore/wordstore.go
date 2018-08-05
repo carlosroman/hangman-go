@@ -36,10 +36,10 @@ func (s *inMemoryStore) GetWord(d domain.Difficulty) (string, error) {
 	return s.words[d][i], nil
 }
 
-func NewInMemoryStoreFromCSV(csvPath string) (Store, error) {
+func NewInMemoryStoreFromCSV(csvPath string) (ws Store, err error) {
 	fs, err := os.Open(csvPath)
 	if err != nil {
-		return nil, err
+		return ws, err
 	}
 
 	//words := make(map[domain.Difficulty][]string)
@@ -51,21 +51,22 @@ func NewInMemoryStoreFromCSV(csvPath string) (Store, error) {
 	}
 
 	for {
+
 		record, rerr := r.Read()
-		if rerr == io.EOF {
-			break
-		}
 
 		if rerr != nil {
+			if rerr == io.EOF {
+				ws = m
+				break
+			}
 			err = rerr
 			break
 		}
 
 		if idx > 0 {
-			i, terr := strconv.Atoi(strings.TrimSpace(record[1]))
-			if terr != nil {
-				fmt.Printf("Error: %s\n", terr)
-				err = terr
+			i, err := strconv.Atoi(strings.TrimSpace(record[1]))
+			if err != nil {
+				fmt.Printf("Error: %s\n", err)
 				break
 			}
 
@@ -88,5 +89,5 @@ func NewInMemoryStoreFromCSV(csvPath string) (Store, error) {
 		}
 		idx += 1
 	}
-	return m, err
+	return ws, err
 }
