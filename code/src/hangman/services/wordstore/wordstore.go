@@ -57,13 +57,27 @@ func NewInMemoryStoreFromCSV(csvPath string) (ws Store, err error) {
 		if rerr != nil {
 			if rerr == io.EOF {
 				ws = m
+				logger.WithFields(logrus.Fields{
+					"csvPath": csvPath,
+				}).Infoln("Done Loading CSV")
 				break
 			}
 			err = rerr
+			logger.WithFields(logrus.Fields{
+				"csvPath": csvPath,
+			}).Error(err)
 			break
 		}
 
 		if idx > 0 {
+			if len(record) != 2 {
+				err = fmt.Errorf("found '%d' records", len(record))
+				logger.WithFields(logrus.Fields{
+					"csvPath": csvPath,
+				}).Error(err)
+				break
+			}
+
 			i, err := strconv.Atoi(strings.TrimSpace(record[1]))
 			if err != nil {
 				fmt.Printf("Error: %s\n", err)
@@ -83,8 +97,11 @@ func NewInMemoryStoreFromCSV(csvPath string) (ws Store, err error) {
 			case domain.VERY_HARD:
 				m.words[domain.VERY_HARD] = append(m.words[domain.VERY_HARD], strings.TrimSpace(record[0]))
 			default:
-				fmt.Println(fmt.Sprintf("got Difficulty '%s'", d))
-				return m, fmt.Errorf("got Difficulty '%s'", d)
+				err = fmt.Errorf("got Difficulty '%s'", d)
+				logger.WithFields(logrus.Fields{
+					"csvPath": csvPath,
+				}).Error(err)
+				return m, err
 			}
 		}
 		idx += 1
